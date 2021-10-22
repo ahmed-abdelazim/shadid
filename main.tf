@@ -28,7 +28,7 @@ resource "digitalocean_vpc" "terraform-vpc" {
 # Create Gateway
 resource "digitalocean_droplet" "gateway" {
     image = "ubuntu-20-04-x64"
-    name = "gateway1"
+    name = "gateway"
     region = "lon1"
     size = "s-1vcpu-1gb"
     vpc_uuid = digitalocean_vpc.terraform-vpc.id

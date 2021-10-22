@@ -62,7 +62,7 @@ head -n 31 /etc/netplan/50-cloud-init.yaml > /tmp/50-cloud-init.yaml.txt
 cat <<EOF >> /tmp/50-cloud-init.yaml.txt
             routes:
                 - to: 0.0.0.0/0
-                  via: ${digitalocean_droplet.gateway1.ipv4_address_private}
+                  via: ${digitalocean_droplet.gateway.ipv4_address_private}
 EOF
 tail -n +32 /etc/netplan/50-cloud-init.yaml  >> /tmp/50-cloud-init.yaml.txt
 cat /tmp/50-cloud-init.yaml.txt > /etc/netplan/50-cloud-init.yaml

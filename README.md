@@ -18,4 +18,4 @@ https://www.terraform.io/cloud
 `do_count`: Number of back droplets
 ## Notes:
 - You will be able to access back droplets only throug the Gateway
-- Back droplets will communicate on the internet using gateway ip
+- Back droplets will communicate to the internet using gateway ip

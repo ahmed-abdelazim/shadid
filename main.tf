@@ -26,7 +26,7 @@ resource "digitalocean_vpc" "terraform-vpc" {
   ip_range = var.vpc_ip_range
 }
 # Create Gateway
-resource "digitalocean_droplet" "gateway1" {
+resource "digitalocean_droplet" "gateway" {
     image = "ubuntu-20-04-x64"
     name = "gateway1"
     region = "lon1"

@@ -1,6 +1,7 @@
 # Digital Ocean deployment
 This Terraform code creates a deployment on Digital Ocean as described on this tutorial:
-https://docs.digitalocean.com/products/networking/vpc/resources/droplet-as-gateway/
+
+[**How to Configure a Droplet as a VPC Gateway**](https://docs.digitalocean.com/products/networking/vpc/resources/droplet-as-gateway/)
 
 ![Deployment diagram](https://github.com/ahmed-abdelazim/shadid/blob/main/deployment.png?raw=true)
 ## Prerequisites

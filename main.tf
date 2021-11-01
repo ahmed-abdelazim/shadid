@@ -42,6 +42,8 @@ resource "digitalocean_droplet" "gateway" {
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 iptables -t nat -A POSTROUTING -s ${var.vpc_ip_range} -o eth0 -j MASQUERADE
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
 apt-get install -y iptables-persistent
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo \

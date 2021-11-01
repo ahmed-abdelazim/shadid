@@ -59,10 +59,10 @@ docker-compose --version
 # Create backend
 resource "digitalocean_droplet" "backend" {
     count = var.do_count
-    image = var.back_size
+    image = "ubuntu-20-04-x64"
     name = "backend-${count.index}"
     region = "lon1"
-    size = "s-1vcpu-1gb"
+    size = var.back_size
     vpc_uuid = digitalocean_vpc.terraform-vpc.id
     ssh_keys = [
       data.digitalocean_ssh_key.gateway.id

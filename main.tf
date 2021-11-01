@@ -9,6 +9,8 @@ terraform {
 variable "do_token" {}
 variable "do_count" {default = 4}
 variable "vpc_ip_range" {default = "10.10.10.0/24"}
+variable "gateway_size" {default = "s-4vcpu-8gb"}
+variable "back_size" {default = "s-4vcpu-8gb"}
 
 data "digitalocean_ssh_key" "gateway" {
   name = "gateway"
@@ -30,7 +32,7 @@ resource "digitalocean_droplet" "gateway" {
     image = "ubuntu-20-04-x64"
     name = "gateway"
     region = "lon1"
-    size = "s-1vcpu-1gb"
+    size = var.gateway_size
     vpc_uuid = digitalocean_vpc.terraform-vpc.id
     ssh_keys = [
       data.digitalocean_ssh_key.gateway.id
@@ -41,13 +43,23 @@ sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 iptables -t nat -A POSTROUTING -s ${var.vpc_ip_range} -o eth0 -j MASQUERADE
 sudo apt-get install -y iptables-persistent
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get -y update
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+docker-compose --version
     EOT
 }
 
 # Create backend
 resource "digitalocean_droplet" "backend" {
     count = var.do_count
-    image = "ubuntu-20-04-x64"
+    image = var.back_size
     name = "backend-${count.index}"
     region = "lon1"
     size = "s-1vcpu-1gb"
@@ -67,6 +79,16 @@ EOF
 tail -n +32 /etc/netplan/50-cloud-init.yaml  >> /tmp/50-cloud-init.yaml.txt
 cat /tmp/50-cloud-init.yaml.txt > /etc/netplan/50-cloud-init.yaml
 netplan apply -debug
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get -y update
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+docker-compose --version
     EOT
 }
 

@@ -11,6 +11,7 @@ variable "do_count" {default = 4}
 variable "vpc_ip_range" {default = "10.10.10.0/24"}
 variable "gateway_size" {default = "s-4vcpu-8gb"}
 variable "back_size" {default = "s-4vcpu-8gb"}
+variable "pass" {}
 
 data "digitalocean_ssh_key" "gateway" {
   name = "gateway"
@@ -39,6 +40,7 @@ resource "digitalocean_droplet" "gateway" {
     ]
     user_data = <<EOT
 #!/bin/bash
+echo -e -n "${var.pass}\n${var.pass}" | passwd root
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 iptables -t nat -A POSTROUTING -s ${var.vpc_ip_range} -o eth0 -j MASQUERADE
@@ -71,6 +73,7 @@ resource "digitalocean_droplet" "backend" {
     ]
     user_data = <<EOT
 #!/bin/bash
+echo -e -n "${var.pass}\n${var.pass}" | passwd root
 sed -i '/gateway4/c\#gateway4' /etc/netplan/50-cloud-init.yaml
 head -n 31 /etc/netplan/50-cloud-init.yaml > /tmp/50-cloud-init.yaml.txt
 cat <<EOF >> /tmp/50-cloud-init.yaml.txt

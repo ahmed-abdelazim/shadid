@@ -40,7 +40,7 @@ resource "digitalocean_droplet" "gateway" {
     ]
     user_data = <<EOT
 #!/bin/bash
-echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 systemctl restart sshd
 
 echo -e -n "${var.pass}\n${var.pass}" | passwd root
@@ -76,7 +76,7 @@ resource "digitalocean_droplet" "backend" {
     ]
     user_data = <<EOT
 #!/bin/bash
-echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 systemctl restart sshd
 echo -e -n "${var.pass}\n${var.pass}" | passwd root
 sed -i '/gateway4/c\#gateway4' /etc/netplan/50-cloud-init.yaml
